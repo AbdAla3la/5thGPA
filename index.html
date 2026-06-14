@@ -238,7 +238,6 @@
     .page-footer a { color: #6b7280; font-weight: 700; text-decoration: none; }
     .page-footer a:hover { color: #374151; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -260,15 +259,11 @@
       <span class="title-bar"></span>
       درجات مواد المرحلة الخامسة
     </div>
-    <div class="courses-grid" id="grid"></div>
-    <button class="btn-calc" onclick="calculate()">احسب المعدل</button>
-   <button id="saveBtn" class="btn-calc"
-        onclick="savePageImage()"
-        style="margin-top:10px; display:none;">
-📸 حفظ النتيجة كصورة
-</button>
-  </div>
+   <div class="courses-grid" id="grid"></div>
+<button class="btn-calc" onclick="calculate()">احسب المعدل</button>
 
+</div>
+  
   <!-- RESULT CARD -->
   <div class="card" id="result"></div>
 
@@ -464,7 +459,6 @@ function calculate() {
   }));
 
   rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  document.getElementById('saveBtn').style.display = 'block';
 }
 
 /* ── Grade label ───────────────────────────────────────────────── */
@@ -476,18 +470,7 @@ function gradeInfo(avg) {
   if (avg >= 50) return { lbl: 'مقبول',    cls: 'pass',      icon: '📋' };
   return               { lbl: 'راسب',      cls: 'fail',      icon: '❌' };
 }
-  function savePageImage() {
-  html2canvas(document.body, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#eef2f9"
-  }).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "5thGPA-result.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  });
-}
+ 
 </script>
 </body>
 </html>
