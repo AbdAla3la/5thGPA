@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حاسبة المعدل – المرحلة الخامسة – كلية الطب</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      background: #eef2f9;
+      min-height: 100vh;
+      padding: 30px 16px 60px;
+    }
+
+    .wrapper { max-width: 900px; margin: 0 auto; }
+
+    /* ══ HEADER ══════════════════════════════════════════════ */
+    .page-hdr {
+      background: linear-gradient(135deg, #0f2850 0%, #1a4490 55%, #2563eb 100%);
+      border-radius: 22px;
+      padding: 36px 28px;
+      text-align: center;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(15,40,80,0.3);
+    }
+    .page-hdr::before {
+      content: ''; position: absolute;
+      top: -70px; right: -70px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    .page-hdr::after {
+      content: ''; position: absolute;
+      bottom: -100px; left: -50px;
+      width: 280px; height: 280px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+    .page-hdr h1 {
+      color: #fff; font-size: 28px; font-weight: 800;
+      margin-bottom: 8px; position: relative;
+    }
+    .page-hdr .hdr-sub {
+      color: rgba(255,255,255,0.82); font-size: 15px;
+      margin-bottom: 20px; position: relative;
+    }
+    .hdr-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .h-pill {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff; padding: 7px 20px;
+      border-radius: 50px; font-size: 13.5px; font-weight: 500;
+    }
+    .h-pill strong { color: #93c5fd; }
+
+    /* ══ CARDS ════════════════════════════════════════════════ */
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 24px rgba(37,99,235,0.08), 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+      font-size: 16px; font-weight: 700; color: #1e2d5a;
+      padding-bottom: 16px; border-bottom: 2px solid #eef0fb;
+      margin-bottom: 22px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .title-bar {
+      width: 5px; height: 22px;
+      background: linear-gradient(180deg, #2563eb, #7c3aed);
+      border-radius: 3px; flex-shrink: 0;
+    }
+
+    /* ══ COURSES GRID ═════════════════════════════════════════ */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 580px) { .courses-grid { grid-template-columns: 1fr; } }
+
+    .c-card {
+      background: #f7f9ff;
+      border: 2px solid #dde5f6;
+      border-radius: 14px;
+      padding: 14px 16px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .c-card:focus-within {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+    .c-card.err { border-color: #ef4444; background: #fef2f2; }
+
+    .c-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .c-ar { font-size: 14.5px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+    .c-en { font-size: 11.5px; color: #6b7280; }
+    .c-chip {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff; font-size: 11.5px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    .g-inp {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #dde3f4; border-radius: 10px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px; font-weight: 600;
+      color: #1e293b; text-align: center;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .g-inp:focus { outline: none; border-color: #2563eb; }
+    .g-inp.err   { border-color: #ef4444; }
+    .g-inp::placeholder { color: #c8cfe8; font-weight: 400; }
+
+    /* ══ BUTTON ════════════════════════════════════════════════ */
+    .btn-calc {
+      display: block; width: 100%; padding: 16px;
+      background: linear-gradient(135deg, #1a40ad, #2563eb, #4f46e5);
+      color: #fff; border: none; border-radius: 14px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 18px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.3px;
+      transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 5px 22px rgba(37,99,235,0.4);
+    }
+    .btn-calc:hover   { opacity: 0.9; box-shadow: 0 8px 30px rgba(37,99,235,0.5); }
+    .btn-calc:active  { transform: scale(0.99); }
+
+    /* ══ RESULT CARD ═══════════════════════════════════════════ */
+    #result           { display: none; }
+    #result.show      { display: block; animation: fadeUp 0.35s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .r-heading {
+      text-align: center; font-size: 19px; font-weight: 700;
+      color: #1e2d5a; margin-bottom: 22px;
+    }
+
+    .scores-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; margin-bottom: 18px;
+    }
+    @media (max-width: 440px) { .scores-row { grid-template-columns: 1fr; } }
+
+    .s-box { border-radius: 18px; padding: 22px 16px; text-align: center; color: #fff; }
+    .s-box.blue   { background: linear-gradient(135deg, #1d4ed8, #2563eb); }
+    .s-box.purple { background: linear-gradient(135deg, #6d28d9, #9333ea); }
+    .s-lbl { font-size: 13.5px; font-weight: 500; opacity: 0.85; margin-bottom: 10px; }
+    .s-val { font-size: 48px; font-weight: 800; line-height: 1; }
+    .s-of  { font-size: 16px; opacity: 0.7; margin-top: 8px; }
+
+    /* Grade badge */
+    .g-badge {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; border-radius: 12px; padding: 14px;
+      margin-bottom: 18px; font-size: 17px; font-weight: 700;
+    }
+    .g-badge.excellent { background: #faf5ff; border: 2px solid #c4b5fd; color: #6d28d9; }
+    .g-badge.vgood     { background: #f0fdf4; border: 2px solid #86efac; color: #166534; }
+    .g-badge.good      { background: #eff6ff; border: 2px solid #93c5fd; color: #1e40af; }
+    .g-badge.pass      { background: #fffbeb; border: 2px solid #fcd34d; color: #92400e; }
+    .g-badge.fail      { background: #fef2f2; border: 2px solid #fca5a5; color: #dc2626; }
+
+    /* Progress bar */
+    .prog-wrap { margin-bottom: 24px; }
+    .prog-meta {
+      display: flex; justify-content: space-between;
+      font-size: 12.5px; color: #6b7280; margin-bottom: 7px;
+    }
+    .prog-track { background: #e8edf8; border-radius: 8px; height: 11px; overflow: hidden; }
+    .prog-fill {
+      height: 100%; border-radius: 8px;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      transition: width 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Summary table */
+    .tbl-sec-title { font-size: 15px; font-weight: 700; color: #374151; margin-bottom: 12px; }
+    .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #e5e7eb; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead th {
+      background: linear-gradient(135deg, #1e40af, #3b82f6);
+      color: #fff; padding: 12px 10px; font-weight: 600; text-align: center;
+    }
+    tbody td {
+      padding: 10px; text-align: center;
+      border-bottom: 1px solid #f1f5f9; color: #374151;
+    }
+    tbody tr:nth-child(even) td { background: #f8faff; }
+    tbody tr.tbl-total td {
+      font-weight: 700; color: #1e40af;
+      background: #eff6ff;
+      border-top: 2px solid #bfdbfe;
+      border-bottom: none;
+    }
+
+    /* Formula note */
+    .formula-note {
+      background: #f8faff; border: 1px solid #dbeafe;
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 13px; color: #374151;
+      margin-top: 16px; text-align: center;
+      line-height: 2;
+    }
+    .formula-note b { color: #1e40af; }
+
+    /* Error message */
+    .err-msg {
+      background: #fef2f2; border: 1px solid #fca5a5;
+      color: #dc2626; border-radius: 10px;
+      padding: 13px 18px; font-size: 14px; font-weight: 500;
+    }
+
+    /* Footer */
+    .page-footer { text-align: center; margin-top: 24px; font-size: 13px; color: #9ca3af; }
+    .page-footer a { color: #6b7280; font-weight: 700; text-decoration: none; }
+    .page-footer a:hover { color: #374151; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="page-hdr">
+    <h1>حاسبة المعدل التراكمي</h1>
+    <div class="hdr-sub">المرحلة الخامسة — كلية الطب</div>
+    <div class="hdr-pills">
+      <span class="h-pill">عدد المواد: <strong>12</strong></span>
+      <span class="h-pill">مجموع الوحدات الداخلية: <strong>51</strong></span>
+      <span class="h-pill">وحدات المرحلة من المجموع الكلي: <strong>25</strong></span>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div class="card-title">
+      <span class="title-bar"></span>
+      درجات مواد المرحلة الخامسة
+    </div>
+    <div class="courses-grid" id="grid"></div>
+    <button class="btn-calc" onclick="calculate()">احسب المعدل</button>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="card" id="result"></div>
+
+  <div class="page-footer">
+    Made by <a href="https://t.me/AbdAla3la">AbdulAala</a>
+  </div>
+
+</div>
+<script>
+'use strict';
+
+/* ── Data ──────────────────────────────────────────────────────────
+   Weights as specified. Total internal credits = 51.
+   Stage-5 contribution to the 6-year cumulative GPA = 25 units.
+   Conversion: avg_out_of_25 = avg_out_of_100 × (25/100) = avg_out_of_100 / 4
+─────────────────────────────────────────────────────────────────── */
+const COURSES = [
+  { id: 'medicine',   ar: 'الطب الباطني',              en: 'Medicine',                   w: 6 },
+  { id: 'gynecology', ar: 'النسائية والتوليد',           en: 'Gynecology',                 w: 6 },
+  { id: 'phc',        ar: 'الرعاية الصحية الأولية',     en: 'PHC',                        w: 5 },
+  { id: 'pediatrics', ar: 'طب الأطفال',                 en: 'Pediatrics',                 w: 3 },
+  { id: 'surgery',    ar: 'الجراحة',                    en: 'Surgery',                    w: 4 },
+  { id: 'ortho',      ar: 'جراحة العظام',               en: 'Orthopedics',                w: 4 },
+  { id: 'radiology',  ar: 'الأشعة والتخدير',            en: 'Radiology & Anesthesiology', w: 4 },
+  { id: 'ophtha',     ar: 'طب العيون',                  en: 'Ophthalmology',              w: 4 },
+  { id: 'dermato',    ar: 'الأمراض الجلدية',            en: 'Dermatology',                w: 4 },
+  { id: 'ent',        ar: 'الأنف والأذن والحنجرة',      en: 'Otolaryngology (ENT)',        w: 4 },
+  { id: 'psych',      ar: 'الطب النفسي',               en: 'Psychiatry',                  w: 3 },
+  { id: 'Project',    ar: 'المشروع',               en: 'Community project',                  w: 4 },
+];
+
+// 6+6+5+3+4+4+4+4+4+4+3+4 = 51
+const TOT_W   = COURSES.reduce((s, c) => s + c.w, 0);
+const GPA_MAX = 25;
+const DIVISOR = 100 / GPA_MAX;  // = 4  →  avg25 = avg100 / 4
+
+/* ── Build Input Cards ─────────────────────────────────────────── */
+const grid = document.getElementById('grid');
+COURSES.forEach(c => {
+  const div = document.createElement('div');
+  div.className = 'c-card';
+  div.id = 'card-' + c.id;
+  div.innerHTML =
+    '<div class="c-row">' +
+      '<div>' +
+        '<div class="c-ar">' + c.ar + '</div>' +
+        '<div class="c-en">' + c.en + '</div>' +
+      '</div>' +
+      '<span class="c-chip">' + c.w + ' وحدات</span>' +
+    '</div>' +
+    '<input type="number" class="g-inp"' +
+    ' id="inp-' + c.id + '"' +
+    ' placeholder="0 – 100"' +
+    ' min="0" max="100" step="any"' +
+    ' data-id="' + c.id + '"' +
+    ' onkeydown="noE(event)"' +
+    ' oninput="live(this)" />';
+  grid.appendChild(div);
+});
+
+/* ── Helpers ───────────────────────────────────────────────────── */
+function noE(e) {
+  if ('eE+-'.includes(e.key)) e.preventDefault();
+}
+
+function live(inp) {
+  const v   = parseFloat(inp.value);
+  const bad = inp.value !== '' && (isNaN(v) || v < 0 || v > 100);
+  inp.classList.toggle('err', bad);
+  document.getElementById('card-' + inp.dataset.id).classList.toggle('err', bad);
+}
+
+/* ── Calculate ─────────────────────────────────────────────────── */
+function calculate() {
+  // Reset all error highlights
+  COURSES.forEach(c => {
+    document.getElementById('inp-'  + c.id).classList.remove('err');
+    document.getElementById('card-' + c.id).classList.remove('err');
+  });
+
+  const rc   = document.getElementById('result');
+  let sum    = 0;
+  let ok     = true;
+  const rows = [];
+
+  for (const c of COURSES) {
+    const inp = document.getElementById('inp-' + c.id);
+    const raw = inp.value.trim();
+
+    if (raw === '') {
+      inp.classList.add('err');
+      document.getElementById('card-' + c.id).classList.add('err');
+      ok = false;
+      continue;
+    }
+
+    const g = parseFloat(raw);
+    if (isNaN(g) || g < 0 || g > 100) {
+      inp.classList.add('err');
+      document.getElementById('card-' + c.id).classList.add('err');
+      ok = false;
+    } else {
+      sum += g * c.w;
+      rows.push({ ar: c.ar, w: c.w, g });
+    }
+  }
+
+  if (!ok) {
+    rc.innerHTML = '<div class="err-msg">⚠️ يرجى ملء جميع الحقول بقيم صحيحة بين 0 و100.</div>';
+    rc.className = 'card show';
+    rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  // Core calculation
+  const avg100 = sum / TOT_W;           // weighted average out of 100
+  const avg25  = avg100 / DIVISOR;      // = avg100 × 25 / 100 = avg100 / 4
+
+  const info = gradeInfo(avg100);
+
+  // Build table rows
+  const tRows = rows.map(r =>
+    `<tr>` +
+      `<td>${r.ar}</td>` +
+      `<td>${r.w}</td>` +
+      `<td>${r.g.toFixed(2)}</td>` +
+      `<td>${(r.g * r.w).toFixed(2)}</td>` +
+    `</tr>`
+  ).join('');
+
+  const totalRow =
+    `<tr class="tbl-total">` +
+      `<td>المجموع والمعدل النهائي</td>` +
+      `<td>${TOT_W}</td>` +
+      `<td><b>${avg100.toFixed(4)}</b></td>` +
+      `<td>${sum.toFixed(2)}</td>` +
+    `</tr>`;
+
+  rc.innerHTML =
+    `<div class="r-heading">نتائج المرحلة الخامسة</div>
+
+    <div class="scores-row">
+      <div class="s-box blue">
+        <div class="s-lbl">معدلك من 100</div>
+        <div class="s-val">${avg100.toFixed(2)}</div>
+        <div class="s-of">/ 100</div>
+      </div>
+      <div class="s-box purple">
+        <div class="s-lbl">معدلك من 25</div>
+        <div class="s-val">${avg25.toFixed(2)}</div>
+        <div class="s-of">/ 25</div>
+      </div>
+    </div>
+
+    <div class="g-badge ${info.cls}">${info.icon} التقدير: ${info.lbl}</div>
+
+    <div class="prog-wrap">
+      <div class="prog-meta"><span>0</span><span>التقدم من 100</span><span>100</span></div>
+      <div class="prog-track">
+        <div class="prog-fill" id="pf" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="tbl-sec-title">جدول تفصيلي بالدرجات ومساهمة كل مادة</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>المادة</th>
+            <th>الوحدات</th>
+            <th>الدرجة / 100</th>
+            <th>الدرجة × الوحدات</th>
+          </tr>
+        </thead>
+        <tbody>${tRows}${totalRow}</tbody>
+      </table>
+    </div>
+
+    <div class="formula-note">
+      <b>آلية الحساب:</b>
+      المعدل من 100 = مجموع (الدرجة × الوحدات) ÷ مجموع الوحدات =
+      ${sum.toFixed(2)} ÷ ${TOT_W} = <b>${avg100.toFixed(4)}</b>
+      <br>
+      المعدل من 25 = ${avg100.toFixed(4)} ÷ 4 = <b>${avg25.toFixed(4)}</b>
+    </div>`;
+
+  rc.className = 'card show';
+
+  // Animate progress bar after DOM paint
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const pf = document.getElementById('pf');
+    if (pf) pf.style.width = avg100 + '%';
+  }));
+
+  rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ── Grade label ───────────────────────────────────────────────── */
+function gradeInfo(avg) {
+  if (avg >= 90) return { lbl: 'امتياز',   cls: 'excellent', icon: '🏆' };
+  if (avg >= 80) return { lbl: 'جيد جداً', cls: 'vgood',     icon: '⭐' };
+  if (avg >= 70) return { lbl: 'جيد',      cls: 'good',      icon: '✅' };
+  if (avg >= 60) return { lbl: 'متوسط',    cls: 'medium',      icon: '📋' };
+  if (avg >= 50) return { lbl: 'مقبول',    cls: 'pass',      icon: '📋' };
+  return               { lbl: 'راسب',      cls: 'fail',      icon: '❌' };
+}
+</script>
+</body>
+</html>
